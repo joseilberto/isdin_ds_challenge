@@ -17,10 +17,10 @@ def read_csv_data(filepath_name: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     numerical_columns = ["user_age"]
     drop_columns = ["local_user_id", "subregion_id"]
     date_columns = ["transaction_date"]
-    labelled_df = pd.DataFrame()
-    filepath = Path(filepath_name)
 
+    filepath = Path(filepath_name)
     if filepath.is_file():
+        labelled_df = pd.DataFrame()
         data = pd.read_csv(
             filepath,
             usecols=lambda x: x not in drop_columns,
