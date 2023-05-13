@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import List, Tuple
 
 
-def read_csv_data(filepath_name: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def read_csv_data(
+    filepath_name: str, drop_null: bool = True
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     In this function we read the csv file and we also define variables as
     either categorical or numeric. We also label encode all variables to be
@@ -26,11 +28,24 @@ def read_csv_data(filepath_name: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
             usecols=lambda x: x not in drop_columns,
             parse_dates=date_columns,
         )
+        if drop_null:
+            data.dropna(
+                subset=[
+                    "user_id",
+                    "user_age",
+                    "region",
+                    "product_id",
+                    "product_family",
+                ],
+                inplace=True,
+            )
+
+        data = add_season_from_date(data)
 
         categorical_columns = [
             col
             for col in data.columns
-            if col not in numerical_columns or col not in date_columns
+            if col not in [*numerical_columns, *date_columns]
         ]
         data[categorical_columns] = data[categorical_columns].astype(
             "category"
@@ -43,3 +58,9 @@ def read_csv_data(filepath_name: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
         return data, labelled_df
     raise ValueError(f"File {filepath_name} does not exist")
+
+
+def add_season_from_date(data: pd.DataFrame) -> pd.DataFrame:
+    """Add a season column to the data"""
+    data["season"] = data["transaction_date"].dt.month % 12 // 3
+    return data
