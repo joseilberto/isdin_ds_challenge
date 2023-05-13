@@ -3,3 +3,4 @@
 *.jpg
 *__init__.py
 .vscode/
+*__pycache__
