@@ -4,3 +4,4 @@
 *__init__.py
 .vscode/
 *__pycache__
+lightning_logs/
